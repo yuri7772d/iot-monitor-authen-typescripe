@@ -50,8 +50,10 @@
 5. การไช้งาน run:
 
    ```bash
-   npm run dev                //run ด้วย nodemon ไม่ต้องเสี่ยเวลา build
-   npx tsc                    //build javascripe
+   npm run dev                // run ด้วย nodemon ไม่ต้องเสี่ยเวลา build
+   
+   npx tsc                    // build javascripe
+   
    npm run ./dist/index.js    // run javascripe
 
 
