@@ -20,26 +20,38 @@
    ```bash
    git clone https://github.com/yuri7772d/iot-monitor-authen-typescripe.git
    cd iot-monitor-authen-typescripe
-   npm install                                           // ติดตั้ง node packet
-   docker compose up -d                                  // init database ด้วย docker-compose
-
-2. สร้าง .env:
    
-**ตัวอยาง .env**
+2. สร้าง .env:
 
    ```bash
    # Server
-PORT=80
+    PORT=80
 
-# Database
-MYSQL_HOST=localhost
-MYSQL_USERNAME=mysql
-MYSQL_PASSWORD=1234
-MYSQL_DATABASE=authenticationDB
+   # Database
+    MYSQL_HOST=localhost
+    MYSQL_USERNAME=mysql
+    MYSQL_PASSWORD=1234
+    MYSQL_DATABASE=authenticationDB
 
-# JWT
-JWT_SECRET=your_jwt_secret_key
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_key
+   # JWT
+    JWT_SECRET=your_jwt_secret_key
+    JWT_REFRESH_SECRET=your_jwt_refresh_secret_key
+   
+3. install packet:
 
+   ```bash
+   npm install
+
+4. init database ด้วย docker-compose:
+   
+   ```bash
+   docker compose up -d
+   
+5. การไช้งาน run:
+
+   ```bash
+   npm run dev                //run ด้วย nodemon ไม่ต้องเสี่ยเวลา build
+   npx tsc                    //build javascripe
+   npm run ./dist/index.js    // run javascripe
 
 
