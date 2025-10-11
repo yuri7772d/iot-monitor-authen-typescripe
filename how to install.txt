@@ -1,0 +1,25 @@
+npm init -y
+
+npm install typescript --save-dev
+
+npx tsc --init
+
+npm install ts-node nodemon --save-dev
+
+----เเก้ไห้ ไฟล์buildไปอยูที่อื่น
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+ิbuild typescripe
+npx tsc 
+
+รันด้วย nodemon
+
+
+"scripts": {
+  "dev": "nodemon --exec ts-node src/index.ts"
+}
+
+npm run dev
+
+npm install dotenv
