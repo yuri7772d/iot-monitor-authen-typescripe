@@ -6,16 +6,17 @@ import {
   UserRegisterRequest,
   UserRegisterResponse,
 } from "../domain/handlerModel/user.handler.model.js";
+import { UserRepo } from "../domain/repo/user.repo.js";
 import { hashToken, verifyToken } from "../infra/jwt/jwt.hash.js";
 import { Passport, Payload } from "../infra/jwt/jwt.model.js";
-import { UserMysql } from "../infra/mysql/repo/user.js";
 
 export class UserUseCase {
-  private repo: UserMysql;
+  private repo: UserRepo;
   private jwtConfig: JWT;
   private expAcessToken = 3600; // 1h
   private expRefreshToken = 3600 * 24 * 7; // 7d
-  constructor(repo: UserMysql, jwtConfig: JWT) {
+
+  constructor(repo: UserRepo, jwtConfig: JWT) {
     this.repo = repo;
     this.jwtConfig = jwtConfig;
   }

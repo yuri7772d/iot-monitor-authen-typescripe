@@ -1,8 +1,9 @@
 import mysql from "mysql2/promise";
 import { UserEntity } from "../../../domain/entities/user.js";
 import { Mysql } from "../connecter.js";
+import { UserRepo } from "../../../domain/repo/user.repo.js";
 
-export class UserMysql {
+export class UserMysql implements UserRepo {
   private db: Mysql;
   constructor(db: Mysql) {
     this.db = db;
