@@ -1,45 +1,100 @@
-import { UserUseCase } from '../src/usecase/user.usecase.js'; 
-import { mockUserRepo } from '../src/domain/repo/mock/user.repo.mock.js'; 
-import * as jwt from '../src/infra/jwt/jwt.moct.js';
+// tests/usecase.user.test.ts
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const jwtConfig = { secret: 'secret', refreshSecret: 'refreshSecret' };
+import type { UserRepo } from "../src/domain/repo/user.repo";
 
-describe('UserUseCase', () => {
-  const userUseCase = new UserUseCase(mockUserRepo, jwtConfig);
+vi.mock("../src/infra/jwt/jwt.hash.js", () => ({
+  hashToken: vi.fn((secret) => `mocked_token${secret}`),
+  verifyToken: vi.fn(() => ({ id: 1, username: "admin" })),
+}));
+
+import { UserUseCase } from "../src/usecase/user.usecase";
+
+describe("UserUseCase", () => {
+  let mockRepo: UserRepo;
+  let usecase: UserUseCase;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    const jwtconfig = { secret: "1", refreshSecret: "2" };
+    // สร้าง mock สำหรับ UserRepo
+    mockRepo = {
+      get_by_username: vi.fn(),
+      create: vi.fn(),
+    };
+    usecase = new UserUseCase(mockRepo, jwtconfig);
   });
 
-  it('should register a new user', async () => {
-    const req = { username: 'newuser', password: 'password123' };
-    const result = await userUseCase.register(req);
+  it("login success", async () => {
+    // mock input & output
+    (mockRepo.get_by_username as any).mockResolvedValue({
+      id: 1,
+      username: "admin",
+      password: "1234",
+    });
 
-    expect(result.res.username).toBe('newuser');
-    expect(result.passport.acessToken).toBe('mockedToken-newuser');
-    expect(result.passport.refreshToken).toBe('mockedToken-newuser');
-    expect(mockUserRepo.create).toHaveBeenCalledWith('newuser', 'password123');
+    const result = await usecase.login({ username: "admin", password: "1234" });
+    expect(result).toEqual({
+      res: { id: 1, username: "admin" },
+      passport: {
+        acessToken: "mocked_token1",
+        refreshToken: "mocked_token2",
+      },
+    });
+
+    // ตรวจสอบว่าเรียกฟังก์ชันด้วย input ถูกต้อง
+    expect(mockRepo.get_by_username).toHaveBeenCalledWith("admin");
   });
 
-  it('should login with correct password', async () => {
-    const req = { username: 'existinguser', password: 'password123' };
-    const result = await userUseCase.login(req);
+  it("login error password is invalid ", async () => {
+    // mock input & output
+    (mockRepo.get_by_username as any).mockResolvedValue({
+      id: 1,
+      username: "admin",
+      password: "1234",
+    });
 
-    expect(result.res.username).toBe('existinguser');
-    expect(result.passport.acessToken).toBe('mockedToken-existinguser');
+    await expect(
+      usecase.login({ username: "admin", password: "123" })
+    ).rejects.toThrow("Password is invalid!");
+
+    // ตรวจสอบว่าเรียกฟังก์ชันด้วย input ถูกต้อง
+    expect(mockRepo.get_by_username).toHaveBeenCalledWith("admin");
   });
 
-  it('should throw error with wrong password', async () => {
-    const req = { username: 'existinguser', password: 'wrongpassword' };
-    await expect(userUseCase.login(req)).rejects.toThrow('Password is invalid!');
+    it("register success", async () => {
+    // mock input & output
+    (mockRepo.create as any).mockResolvedValue({
+      id: 1,
+    });
+
+    const result = await usecase.register({ username: "admin", password: "1234" });
+    expect(result).toEqual({
+      res: { id: 1, username: "admin" },
+      passport: {
+        acessToken: "mocked_token1",
+        refreshToken: "mocked_token2",
+      },
+    });
+
+    // ตรวจสอบว่าเรียกฟังก์ชันด้วย input ถูกต้อง
+    expect(mockRepo.create).toHaveBeenCalledWith("admin","1234");
   });
 
-  it('should refresh token', async () => {
-    const refreshToken = 'mockedToken-existinguser';
-    const result = await userUseCase.refreshToken(refreshToken);
+      it("refreshToken success", async () => {
+    
+    const result = await usecase.refreshToken( "mocked_token2");
+    expect(result).toEqual({
+      res: { id: 1, username: "admin" },
+      passport: {
+        acessToken: "mocked_token1",
+        refreshToken: "mocked_token2",
+      },
+    });
 
-    expect(result.res.username).toBe('existinguser');
-    expect(result.passport.acessToken).toBe('mockedToken-existinguser');
-    expect(result.passport.refreshToken).toBe(refreshToken);
+    // ตรวจสอบว่าเรียกฟังก์ชันด้วย input ถูกต้อง
+  //  expect(mockRepo.create).toHaveBeenCalledWith("admin","1234");
   });
+
+
+
 });
