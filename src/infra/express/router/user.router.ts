@@ -7,6 +7,8 @@ import { mapToUserRegisterRequest, userRegisterValidation } from "../middlewere/
 import { validate } from "../middlewere/validate.js";
 import { mapToUserLoginRequest, userLoginValidation } from "../middlewere/userlogin.validating.js";
 import { cookieRefreshTokenValidation } from "../middlewere/cookieRefreshToken.validating.js";
+import { verifyToken } from "../../jwt/jwt.hash.js";
+import { verifyTokenMinddlewere } from "../middlewere/verifyToken.middlewere.js";
 
 export class UserRouter {
   public router: Router;
@@ -21,6 +23,7 @@ export class UserRouter {
     this.router.post("/register",userRegisterValidation ,validate,this.register.bind(this));
     this.router.post("/login",userLoginValidation ,validate,this.login.bind(this));
     this.router.get("/refreshToken",cookieRefreshTokenValidation ,this.refreshToken.bind(this));
+    this.router.get("/",verifyTokenMinddlewere(config.jwt.secret) ,this.get.bind(this));
   }
 
   async register(req: Request, res: Response) {
@@ -53,7 +56,18 @@ export class UserRouter {
        }).catch((e)=>{
         res.status(400).json({message: e.message|| e})
     })
+
+
   }
+
+      async get(req: Request, res: Response) {
+    res.status(200).json({
+      id:req.payload?.id,
+      username:req.payload?.username,
+    })
+
+  }
+
 
 
 

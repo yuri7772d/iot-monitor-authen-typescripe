@@ -14,8 +14,8 @@ export function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.get("/health-check", healthCheck);
-  app.use("/authen",userRouter.router);
+  app.get("/", healthCheck);
+  app.use("/user",userRouter.router);
 
   app.listen(config.server.port, () => {
     console.log(`Server running on http://localhost:${config.server.port}`);
